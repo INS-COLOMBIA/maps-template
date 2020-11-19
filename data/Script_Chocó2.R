@@ -25,23 +25,20 @@ rm(list = ls())
 #-------------------------------------------------
 
 data_choco <- read_excel("data/Data_Choco.xlsx")
-map_choco <- readOGR(dsn ="shapes", layer = "MGN_MPIO_POLITICO")
+shp_choco <- readOGR(dsn ="shapes", layer = "MGN_MPIO_POLITICO")
 
-map <- fortify(map_choco, region = "MPIO_CCDGO")
-
-theme_set(
-  theme_bw() + 
-    theme(legend.position = "bottom")
-)
-
+map_data <- fortify(shp_choco, region = "MPIO_CCDGO")
 data_choco$id <- as.character(data_choco$id)
-map <- inner_join(map,data_choco, by="id")
+map_data_merged <- inner_join(map_data,data_choco, by="id")
 
 
 size_text <- 10
+
+theme_set(theme_bw() + theme(legend.position = "bottom"))
+
 p1 <- 
   ggplot() + 
-  geom_map(data=map, map=map, 
+  geom_map(data=map_data_merged, map=map_data_merged, 
            aes(x=long, y=lat, map_id=id, group=group, fill= population),  
            color="black", size=1, alpha = .8) + 
   geom_polygon(data=map,
@@ -63,4 +60,8 @@ p1 <-
 p1
 
 ggsave("maps/Choco2.png", width=15, height=20)
+
+
+
+
 
